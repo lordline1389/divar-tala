@@ -874,6 +874,8 @@ const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEBCAY
 // ==================================================================
 const SUPABASE_URL = 'https://kifsyhxludujjkgdetxg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpZnN5aHhsdWR1amprZ2RldHhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0ODA1NzksImV4cCI6MjEwMTA1NjU3OX0.lu0glVHCiMg38u6GLXY320eb4toRU_j3F1m75QbNt_U';
+// آدرس پایه‌ی توابع سروری (Supabase Edge Functions) — جایگزین مسیرهای قبلی /api/...
+const EDGE_FUNCTIONS_BASE = 'https://kifsyhxludujjkgdetxg.functions.supabase.co';
 let supabaseClient = null;
 try{
   if(SUPABASE_URL.indexOf('YOUR-PROJECT-REF') === -1){
@@ -941,8 +943,8 @@ renderTicker();
 // این کد تلاش می‌کند قیمت واقعی طلا/سکه را از سرویس BrsApi بگیرد.
 // برای استفاده پایدار، یک API Key رایگان از https://brsapi.ir/free-api-gold-currency-webservice/ بگیر
 // و آن را در خط زیر جایگزین کن (بدون هزینه، فقط ثبت‌نام).
-const BRSAPI_KEY = 'FreeSV0E1LSgB9RDjuf0QorSLViX8pPG'; // کلید نمونه؛ برای پایداری بیشتر کلید اختصاصی خودت را بگذار
-const BRSAPI_URL = `https://BrsApi.ir/Api/Market/Gold_Currency.php?key=${BRSAPI_KEY}`;
+const BRSAPI_KEY = 'B8YcZ3ZQqNL6bQ9FN54tbVfvWBVDd3Lu'; // کلید واقعی و اختصاصی
+const BRSAPI_URL = `https://Api.BrsApi.ir/Market/Gold_Currency.php?key=${BRSAPI_KEY}`;
 
 function findField(obj, keys){
   for(const k of keys){ if(obj && obj[k] !== undefined && obj[k] !== null) return obj[k]; }
@@ -1450,7 +1452,7 @@ document.getElementById('sendOtpBtn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'در حال ارسال...';
   try{
-    const res = await fetch('/api/send-otp', {
+    const res = await fetch(`${EDGE_FUNCTIONS_BASE}/send-otp`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({mobile: phone})
@@ -1512,7 +1514,7 @@ document.getElementById('verifyOtpBtn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'در حال بررسی...';
   try{
-    const res = await fetch('/api/verify-otp', {
+    const res = await fetch(`${EDGE_FUNCTIONS_BASE}/verify-otp`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({mobile: pendingPhone, code})
@@ -1658,7 +1660,7 @@ async function loadAdminRequests(){
   }
   list.innerHTML = `<p style="text-align:center; color:var(--ink-dim); font-size:13px; padding:20px 0;">در حال بارگذاری...</p>`;
   try{
-    const res = await fetch('/api/admin-requests', {
+    const res = await fetch(`${EDGE_FUNCTIONS_BASE}/admin-requests`, {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();
@@ -1729,7 +1731,7 @@ async function handleAdminAction(id, act, btn){
   const buttons = btn.closest('.admin-req-actions').querySelectorAll('button');
   buttons.forEach(b => b.disabled = true);
   try{
-    const url = act === 'delete' ? '/api/admin-delete-request' : '/api/admin-update-request';
+    const url = act === 'delete' ? `${EDGE_FUNCTIONS_BASE}/admin-delete-request` : `${EDGE_FUNCTIONS_BASE}/admin-update-request`;
     const body = act === 'delete' ? {id} : {id, status: act};
     const res = await fetch(url, {
       method: 'POST',
