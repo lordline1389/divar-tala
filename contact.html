@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تماس با ما | دیوار طلا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0b0a08; --bg-1:#141210; --bg-2:#1c1a16; --line:#2c2822;
+    --gold-1:#e9c46a; --gold-2:#c9a227; --champagne:#efe6d2;
+    --ink:#f5f2ea; --ink-dim:#a89f8d; --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg-0); color:var(--ink); font-family:'Vazirmatn', sans-serif;
+    min-height:100vh; line-height:1.9;
+  }
+  a{color:var(--gold-1); text-decoration:none;}
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,10,8,0.9); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:16px 20px; display:flex; align-items:center; justify-content:space-between;
+    max-width:900px; margin:0 auto;
+  }
+  .logo{
+    font-size:20px; font-weight:800;
+    background:linear-gradient(100deg, var(--gold-1), var(--champagne) 35%, var(--gold-2) 65%, var(--gold-1));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .back{font-size:13px; color:var(--ink-dim); border:1px solid var(--line); padding:7px 14px; border-radius:20px;}
+  main{max-width:820px; margin:0 auto; padding:36px 20px 90px;}
+  h1{font-size:26px; color:var(--gold-1); margin-bottom:20px; font-weight:800;}
+  h2{font-size:15px; color:var(--champagne); margin-bottom:6px; font-weight:700;}
+  p{color:var(--ink-dim); font-size:14.5px; margin-bottom:10px;}
+  .grid{display:grid; gap:16px; grid-template-columns:1fr; margin-top:20px;}
+  @media(min-width:600px){.grid{grid-template-columns:1fr 1fr;}}
+  .card{
+    background:var(--bg-1); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px;
+  }
+  .card b{color:var(--gold-1); display:block; font-size:14px; margin-bottom:6px;}
+  footer{
+    border-top:1px solid var(--line); padding:24px 20px; text-align:center;
+    color:var(--ink-dim); font-size:12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">دیوار طلا</div>
+  <a class="back" href="index.html">بازگشت به سایت</a>
+</header>
+
+<main>
+  <h1>تماس با ما</h1>
+  <p>برای طرح سوالات، پیشنهادات، گزارش مشکل یا هرگونه ارتباط با تیم دیوار طلا می‌توانید از راه‌های زیر با ما در تماس باشید.</p>
+
+  <div class="grid">
+    <div class="card">
+      <b>ایمیل پشتیبانی</b>
+      <p>info@divaretalla.ir</p>
+    </div>
+    <div class="card">
+      <b>آدرس وب‌سایت</b>
+      <p>divaretalla.ir</p>
+    </div>
+    <div class="card">
+      <b>ساعات پاسخگویی</b>
+      <p>شنبه تا پنج‌شنبه، ۹ الی ۱۸</p>
+    </div>
+    <div class="card">
+      <b>زمان پاسخ‌گویی به ایمیل</b>
+      <p>حداکثر تا ۴۸ ساعت کاری</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© تمامی حقوق برای دیوار طلا محفوظ است.</p>
+</footer>
+
+</body>
+</html>
