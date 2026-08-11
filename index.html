@@ -438,6 +438,10 @@
     color:var(--ink-dim); flex-shrink:0;
   }
   .sheet-body{padding:18px;}
+  .msg-bubble{max-width:78%; padding:9px 13px; border-radius:14px; font-size:13.5px; line-height:1.7; word-break:break-word;}
+  .msg-me{align-self:flex-start; background:linear-gradient(135deg, var(--gold-2), var(--gold-1)); color:#241c07; border-bottom-left-radius:4px;}
+  .msg-them{align-self:flex-end; background:var(--bg-2); border:1px solid var(--line); color:var(--ink); border-bottom-right-radius:4px;}
+  .msg-time{font-size:10px; opacity:0.65; margin-top:3px; display:block;}
 
   /* -- Detail view -- */
   .detail-media{
@@ -796,7 +800,7 @@
             </div>
           </div>
           <div class="spec-grid" style="grid-template-columns:1fr;">
-            <div class="spec-item" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="spec-item" id="myAdsRow" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
               <span>آگهی‌های من</span>
               <b class="mono" id="myAdsCount">۰</b>
             </div>
@@ -874,6 +878,40 @@
           <button class="btn-ghost" style="margin-inline-start:auto; padding:6px 14px; font-size:12px;" id="adminRefreshBtn">⟳ بروزرسانی</button>
         </div>
         <div id="adminReqList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== My ads sheet ===== -->
+  <div class="overlay" id="myAdsOverlay">
+    <div class="sheet" style="max-height:88vh;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3>آگهی‌های من</h3>
+        <button class="sheet-close" id="closeMyAds">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div id="myAdsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Chat sheet ===== -->
+  <div class="overlay" id="chatOverlay">
+    <div class="sheet" style="max-height:88vh; display:flex; flex-direction:column;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3 id="chatTitle">چت</h3>
+        <button class="sheet-close" id="closeChat">✕</button>
+      </div>
+      <div class="sheet-body" style="flex:1; display:flex; flex-direction:column; padding-bottom:8px;">
+        <div id="chatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; min-height:200px; max-height:50vh;"></div>
+        <form id="chatForm" style="display:flex; gap:8px; margin-top:10px;">
+          <input type="text" id="chatInput" placeholder="پیام خود را بنویسید..." autocomplete="off" style="flex:1; background:var(--bg-2); border:1px solid var(--line); border-radius:20px; padding:10px 16px; color:var(--ink); font-family:inherit; font-size:13.5px;">
+          <button type="submit" class="btn-primary" style="width:44px; height:44px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -1163,6 +1201,7 @@ async function loadListingsFromDB(){
       verified: row.verified,
       time: new Date(row.created_at).toLocaleDateString('fa-IR'),
       seller: row.seller_name,
+      sellerPhone: row.seller_phone,
       images: row.images || [],
     }));
   } catch(err){
@@ -1293,9 +1332,20 @@ function openDetail(id){
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
         ذخیره
       </button>
-      <button class="btn-primary" onclick="showToast('شماره تماس فروشنده نمایش داده شد')">
+      ${l.sellerPhone ? `
+      <a class="btn-primary" style="text-decoration:none; display:flex;" href="tel:${escapeHtml(l.sellerPhone)}">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 3a2 2 0 0 1-.5 2.1L8 10.1a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c1 .3 2 .5 3 .7a2 2 0 0 1 1.6 2z"/></svg>
-        تماس با فروشنده
+        ${toPersianDigits(l.sellerPhone)}
+      </a>` : `
+      <button class="btn-primary" onclick="showToast('شماره تماس ثبت نشده است')" style="opacity:0.6;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 3a2 2 0 0 1-.5 2.1L8 10.1a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c1 .3 2 .5 3 .7a2 2 0 0 1 1.6 2z"/></svg>
+        شماره نامشخص
+      </button>`}
+    </div>
+    <div class="detail-actions" style="margin-top:8px;">
+      <button class="btn-ghost" style="width:100%; border-color:var(--gold-2); color:var(--gold-1);" onclick="openChat('${l.id}', ${l.sellerPhone ? `'${escapeHtml(l.sellerPhone)}'` : 'null'}, '${escapeHtml(l.seller)}')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4A8.5 8.5 0 0 1 3 11.5 8.4 8.4 0 0 1 11.5 3 8.5 8.5 0 0 1 21 11.5z"/></svg>
+        چت با فروشنده
       </button>
     </div>`;
   const strip = document.getElementById('galleryStrip');
@@ -1363,7 +1413,9 @@ document.getElementById('pImages').addEventListener('change', e => {
   e.target.value = '';
 });
 
-function openPost(){
+let editingAdId = null;
+
+function openPost(adToEdit){
   if(!currentUser){
     showToast('اول باید وارد حساب کاربری بشی');
     openAuth();
@@ -1373,18 +1425,43 @@ function openPost(){
   const citySel = document.getElementById('pCity');
   if(catSel.options.length === 0) categories.forEach(c => catSel.insertAdjacentHTML('beforeend', `<option value="${c.name}">${c.name}</option>`));
   if(citySel.options.length === 0) cities.forEach(c => citySel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+
+  const sheetTitle = document.querySelector('#postOverlay .sheet-head h3');
+  const submitBtn = document.querySelector('#postForm button[type="submit"]');
+
+  if(adToEdit){
+    editingAdId = adToEdit.id;
+    if(sheetTitle) sheetTitle.textContent = 'ویرایش آگهی';
+    if(submitBtn) submitBtn.textContent = 'ذخیره تغییرات';
+    document.getElementById('pTitle').value = adToEdit.title;
+    document.getElementById('pCat').value = adToEdit.category;
+    document.getElementById('pCarat').value = adToEdit.carat;
+    document.getElementById('pWeight').value = adToEdit.weight;
+    document.getElementById('pWage').value = adToEdit.wage;
+    document.getElementById('pCity').value = adToEdit.city;
+    document.getElementById('pDesc').value = adToEdit.desc;
+    document.getElementById('pPhone').value = adToEdit.sellerPhone || '';
+    pendingImages = (adToEdit.images || []).slice();
+    renderThumbs();
+  } else {
+    editingAdId = null;
+    if(sheetTitle) sheetTitle.textContent = 'ثبت آگهی جدید';
+    if(submitBtn) submitBtn.textContent = 'انتشار آگهی';
+  }
+
   postOverlay.classList.add('open');
 }
-document.querySelector('.btn-post').addEventListener('click', openPost);
+document.querySelector('.btn-post').addEventListener('click', () => openPost());
 document.getElementById('fabPost').addEventListener('click', e => { e.preventDefault(); openPost(); });
-document.getElementById('closePost').addEventListener('click', () => postOverlay.classList.remove('open'));
-postOverlay.addEventListener('click', e => { if(e.target === postOverlay) postOverlay.classList.remove('open'); });
+document.getElementById('closePost').addEventListener('click', () => { postOverlay.classList.remove('open'); editingAdId = null; });
+postOverlay.addEventListener('click', e => { if(e.target === postOverlay){ postOverlay.classList.remove('open'); editingAdId = null; } });
 
 document.getElementById('postForm').addEventListener('submit', async e => {
   e.preventDefault();
   const submitBtn = e.target.querySelector('button[type="submit"]');
+  const isEditing = !!editingAdId;
   const newAd = {
-    id: 'ad_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    id: editingAdId || ('ad_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)),
     title: document.getElementById('pTitle').value.trim(),
     category: document.getElementById('pCat').value,
     carat: Number(document.getElementById('pCarat').value),
@@ -1400,10 +1477,9 @@ document.getElementById('postForm').addEventListener('submit', async e => {
   };
 
   if(supabaseClient){
-    if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'در حال ثبت...'; }
+    if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = isEditing ? 'در حال ذخیره...' : 'در حال ثبت...'; }
     try{
-      const { error } = await supabaseClient.from('listings').insert({
-        id: newAd.id,
+      const payload = {
         title: newAd.title,
         category: newAd.category,
         carat: newAd.carat,
@@ -1411,29 +1487,40 @@ document.getElementById('postForm').addEventListener('submit', async e => {
         wage: newAd.wage,
         city: newAd.city,
         description: newAd.desc,
-        verified: false,
         seller_name: newAd.seller,
         seller_phone: newAd.sellerPhone,
         images: newAd.images,
-      });
-      if(error) throw error;
+      };
+      if(isEditing){
+        const { error } = await supabaseClient.from('listings').update(payload).eq('id', editingAdId);
+        if(error) throw error;
+      } else {
+        const { error } = await supabaseClient.from('listings').insert({ id: newAd.id, verified: false, ...payload });
+        if(error) throw error;
+      }
     } catch(err){
       console.error('خطا در ثبت آگهی در Supabase:', err);
       showToast('ثبت آگهی در سرور ناموفق بود، دوباره امتحان کن');
-      if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'ثبت آگهی'; }
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = isEditing ? 'ذخیره تغییرات' : 'ثبت آگهی'; }
       return;
     }
-    if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'ثبت آگهی'; }
+    if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = isEditing ? 'ذخیره تغییرات' : 'ثبت آگهی'; }
   }
 
-  listings.unshift(newAd);
+  if(isEditing){
+    const idx = listings.findIndex(l => l.id === editingAdId);
+    if(idx !== -1) listings[idx] = newAd;
+  } else {
+    listings.unshift(newAd);
+  }
+  editingAdId = null;
   e.target.reset();
   pendingImages = [];
   renderThumbs();
   postOverlay.classList.remove('open');
   renderGrid();
   updateAccountUI();
-  showToast('آگهی شما با موفقیت منتشر شد ✓');
+  showToast(isEditing ? 'آگهی با موفقیت ویرایش شد ✓' : 'آگهی شما با موفقیت منتشر شد ✓');
   document.getElementById('listings').scrollIntoView({behavior:'smooth'});
 });
 
@@ -1463,7 +1550,7 @@ function openAuth(){
   if(currentUser){
     document.getElementById('accPhoneShown').textContent = currentUser.name ? currentUser.name : currentUser.phone;
     document.getElementById('accAvatar').textContent = currentUser.name ? currentUser.name.charAt(0) : currentUser.phone.slice(-2);
-    document.getElementById('myAdsCount').textContent = fmt(listings.filter(l => l.seller === `کاربر ${currentUser.phone.slice(-4)}`).length);
+    document.getElementById('myAdsCount').textContent = fmt(listings.filter(l => l.sellerPhone === currentUser.phone).length);
     document.getElementById('openAdminBtn').style.display = adminToken ? 'block' : 'none';
     showAuthStep('account');
   } else {
@@ -1613,6 +1700,186 @@ function updateAccountUI(){
   document.getElementById('accountLabel').textContent = currentUser ? toPersianDigits(currentUser.phone.slice(-4)) : 'حساب من';
 }
 updateAccountUI();
+
+// ---- My ads sheet ----
+const myAdsOverlay = document.getElementById('myAdsOverlay');
+
+function renderMyAds(){
+  const list = document.getElementById('myAdsList');
+  if(!currentUser){ list.innerHTML = ''; return; }
+  const myAds = listings.filter(l => l.sellerPhone === currentUser.phone);
+  if(myAds.length === 0){
+    list.innerHTML = `<p style="color:var(--ink-dim); text-align:center; padding:24px 0;">هنوز آگهی‌ای ثبت نکرده‌ای.</p>`;
+    return;
+  }
+  list.innerHTML = myAds.map(l => `
+    <div class="spec-item" style="display:flex; flex-direction:column; gap:8px; align-items:stretch; margin-bottom:10px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <b style="font-size:13.5px;">${escapeHtml(l.title)}</b>
+        <span style="font-size:11px; color:var(--ink-dim); white-space:nowrap;">${escapeHtml(l.city)} · ${toPersianDigits(l.weight)} گرم</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-ghost" style="flex:1; padding:8px; font-size:12.5px;" data-edit="${l.id}">ویرایش</button>
+        <button class="btn-ghost" style="flex:1; padding:8px; font-size:12.5px; border-color:#c0392b; color:#e57373;" data-delete="${l.id}">حذف</button>
+      </div>
+    </div>`).join('');
+
+  list.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ad = listings.find(l => l.id === btn.dataset.edit);
+      if(!ad) return;
+      myAdsOverlay.classList.remove('open');
+      authOverlay.classList.remove('open');
+      openPost(ad);
+    });
+  });
+  list.querySelectorAll('[data-delete]').forEach(btn => {
+    btn.addEventListener('click', () => deleteMyAd(btn.dataset.delete));
+  });
+}
+
+async function deleteMyAd(id){
+  if(!confirm('از حذف این آگهی مطمئنی؟ این کار قابل بازگشت نیست.')) return;
+  if(supabaseClient){
+    try{
+      const { error } = await supabaseClient.from('listings').delete().eq('id', id);
+      if(error) throw error;
+    } catch(err){
+      console.error('خطا در حذف آگهی:', err);
+      showToast('حذف آگهی ناموفق بود، دوباره امتحان کن');
+      return;
+    }
+  }
+  listings = listings.filter(l => l.id !== id);
+  renderGrid();
+  renderMyAds();
+  document.getElementById('myAdsCount').textContent = fmt(listings.filter(l => l.sellerPhone === currentUser.phone).length);
+  showToast('آگهی حذف شد ✓');
+}
+
+document.getElementById('myAdsRow').addEventListener('click', () => {
+  if(!currentUser) return;
+  renderMyAds();
+  authOverlay.classList.remove('open');
+  myAdsOverlay.classList.add('open');
+});
+document.getElementById('closeMyAds').addEventListener('click', () => myAdsOverlay.classList.remove('open'));
+myAdsOverlay.addEventListener('click', e => { if(e.target === myAdsOverlay) myAdsOverlay.classList.remove('open'); });
+
+// ---- Chat between buyer and seller ----
+const chatOverlay = document.getElementById('chatOverlay');
+let chatListingId = null;
+let chatOtherPhone = null;
+let chatChannel = null;
+
+function chatConversationId(listingId, phoneA, phoneB){
+  const pair = [phoneA, phoneB].sort().join('_');
+  return `${listingId}__${pair}`;
+}
+
+function renderChatMessages(messages){
+  const box = document.getElementById('chatMessages');
+  if(messages.length === 0){
+    box.innerHTML = `<p style="color:var(--ink-dim); text-align:center; margin:auto; font-size:13px;">هنوز پیامی رد و بدل نشده. اولین پیام رو بفرست!</p>`;
+    return;
+  }
+  box.innerHTML = messages.map(m => {
+    const mine = m.sender_phone === currentUser.phone;
+    const time = new Date(m.created_at).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+    return `<div class="msg-bubble ${mine ? 'msg-me' : 'msg-them'}">${escapeHtml(m.body)}<span class="msg-time">${time}</span></div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function loadChatMessages(){
+  if(!supabaseClient || !chatListingId || !chatOtherPhone) return;
+  try{
+    const { data, error } = await supabaseClient
+      .from('messages')
+      .select('*')
+      .eq('listing_id', chatListingId)
+      .or(`and(sender_phone.eq.${currentUser.phone},receiver_phone.eq.${chatOtherPhone}),and(sender_phone.eq.${chatOtherPhone},receiver_phone.eq.${currentUser.phone})`)
+      .order('created_at', { ascending: true });
+    if(error) throw error;
+    renderChatMessages(data || []);
+  } catch(err){
+    console.error('خطا در بارگذاری پیام‌ها:', err);
+  }
+}
+
+function subscribeChat(){
+  if(!supabaseClient) return;
+  if(chatChannel) supabaseClient.removeChannel(chatChannel);
+  chatChannel = supabaseClient
+    .channel(`chat-${chatConversationId(chatListingId, currentUser.phone, chatOtherPhone)}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `listing_id=eq.${chatListingId}` }, payload => {
+      const m = payload.new;
+      const belongsHere = (m.sender_phone === currentUser.phone && m.receiver_phone === chatOtherPhone) ||
+                           (m.sender_phone === chatOtherPhone && m.receiver_phone === currentUser.phone);
+      if(belongsHere) loadChatMessages();
+    })
+    .subscribe();
+}
+
+function openChat(listingId, sellerPhone, sellerName){
+  if(!currentUser){
+    showToast('اول باید وارد حساب کاربری بشی');
+    openAuth();
+    return;
+  }
+  if(!sellerPhone){
+    showToast('شماره تماس فروشنده ثبت نشده، چت در دسترس نیست');
+    return;
+  }
+  if(sellerPhone === currentUser.phone){
+    showToast('این آگهی متعلق به خودته');
+    return;
+  }
+  chatListingId = listingId;
+  chatOtherPhone = sellerPhone;
+  document.getElementById('chatTitle').textContent = `چت با ${sellerName || 'فروشنده'}`;
+  document.getElementById('chatMessages').innerHTML = `<p style="color:var(--ink-dim); text-align:center; margin:auto; font-size:13px;">در حال بارگذاری...</p>`;
+  detailOverlay.classList.remove('open');
+  chatOverlay.classList.add('open');
+  loadChatMessages();
+  subscribeChat();
+}
+
+document.getElementById('closeChat').addEventListener('click', () => {
+  chatOverlay.classList.remove('open');
+  if(chatChannel && supabaseClient){ supabaseClient.removeChannel(chatChannel); chatChannel = null; }
+});
+chatOverlay.addEventListener('click', e => {
+  if(e.target === chatOverlay){
+    chatOverlay.classList.remove('open');
+    if(chatChannel && supabaseClient){ supabaseClient.removeChannel(chatChannel); chatChannel = null; }
+  }
+});
+
+document.getElementById('chatForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const input = document.getElementById('chatInput');
+  const body = input.value.trim();
+  if(!body || !currentUser || !chatListingId || !chatOtherPhone) return;
+  input.value = '';
+  if(!supabaseClient){
+    showToast('اتصال به سرور برقرار نیست');
+    return;
+  }
+  try{
+    const { error } = await supabaseClient.from('messages').insert({
+      listing_id: chatListingId,
+      sender_phone: currentUser.phone,
+      receiver_phone: chatOtherPhone,
+      body,
+    });
+    if(error) throw error;
+    loadChatMessages();
+  } catch(err){
+    console.error('خطا در ارسال پیام:', err);
+    showToast('ارسال پیام ناموفق بود');
+  }
+});
 
 // ---- Agency (city representative) request ----
 const agencyOverlay = document.getElementById('agencyOverlay');
