@@ -244,12 +244,10 @@
 
   /* ===== Listings grid ===== */
   .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
-    gap:16px;
+    display:flex;
+    flex-direction:column;
   }
   .empty-state{
-    grid-column:1/-1;
     display:flex; flex-direction:column; align-items:center; text-align:center;
     padding:60px 20px;
     background:var(--bg-1);
@@ -268,39 +266,46 @@
   .empty-state p{font-size:13px; color:var(--ink-dim); max-width:320px; line-height:1.9; margin-bottom:22px;}
   .empty-cta{padding:12px 22px; flex:none;}
   .card{
-    background:var(--bg-1);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    overflow:hidden;
-    transition:.2s;
-    display:flex; flex-direction:column;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    display:flex; flex-direction:row;
+    align-items:stretch;
+    gap:14px;
+    padding:16px 2px;
+    transition:.15s;
   }
-  .card:hover{border-color:var(--gold-3); transform:translateY(-4px); box-shadow:0 12px 28px rgba(0,0,0,0.35);}
+  .card:first-child{border-top:1px solid var(--line);}
+  .card:active{background:rgba(233,196,106,0.04);}
   .card-media{
     position:relative;
-    height:150px;
+    width:112px; height:112px; flex:none;
+    border-radius:12px; overflow:hidden;
     background:var(--thumb, linear-gradient(135deg,#2a2418,#1a1610));
     display:flex; align-items:center; justify-content:center;
   }
-  .card-media svg{width:34px; height:34px; color:rgba(233,196,106,0.55);}
+  .card-media svg{width:30px; height:30px; color:rgba(233,196,106,0.55);}
   .badge{
-    position:absolute; top:9px; right:9px;
+    position:absolute; top:6px; right:6px;
     background:rgba(11,10,8,0.75);
     border:1px solid rgba(233,196,106,0.4);
-    color:var(--gold-1); font-size:10.5px; font-weight:600;
-    padding:4px 9px; border-radius:999px;
-    display:flex; align-items:center; gap:4px;
+    color:var(--gold-1); font-size:9.5px; font-weight:600;
+    padding:3px 7px; border-radius:999px;
+    display:flex; align-items:center; gap:3px;
   }
   .badge-carat{
-    position:absolute; bottom:9px; left:9px;
+    position:absolute; bottom:6px; left:6px;
     background:rgba(11,10,8,0.75);
-    color:var(--champagne); font-size:10.5px;
-    padding:4px 9px; border-radius:999px;
+    color:var(--champagne); font-size:9.5px;
+    padding:3px 7px; border-radius:999px;
     font-family:'JetBrains Mono';
   }
-  .card-body{padding:13px 14px 15px; flex:1; display:flex; flex-direction:column; gap:8px;}
-  .card-title{font-size:14px; font-weight:600; color:var(--champagne); line-height:1.5;}
-  .card-price{font-family:'JetBrains Mono'; font-size:15.5px; color:var(--gold-1); font-weight:600;}
+  .card-body{flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; padding:2px 0;}
+  .card-title{
+    font-size:14px; font-weight:600; color:var(--champagne); line-height:1.5;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .card-price{font-family:'JetBrains Mono'; font-size:15px; color:var(--gold-1); font-weight:600; margin-top:auto;}
   .card-price span{font-size:11px; color:var(--ink-dim); font-family:'Vazirmatn'; font-weight:400;}
   .btn-calc{
     background:linear-gradient(135deg, var(--gold-1), var(--gold-2)); color:#1a1305; border:none;
@@ -337,8 +342,7 @@
   .admin-btn-reject{border-color:rgba(200,80,80,0.4) !important; color:#d06060 !important;}
   .card-meta{
     display:flex; justify-content:space-between;
-    font-size:11.5px; color:var(--ink-dim);
-    padding-top:8px; border-top:1px dashed var(--line);
+    font-size:11px; color:var(--ink-dim);
   }
 
   /* ===== Trust strip ===== */
@@ -852,6 +856,12 @@
               <b class="mono" id="myAdsCount">۰</b>
             </div>
           </div>
+          <div class="spec-grid" style="grid-template-columns:1fr; margin-top:10px;">
+            <div class="spec-item" id="myChatsRow" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+              <span>چت‌ها</span>
+              <b class="mono" id="myChatsCount">۰</b>
+            </div>
+          </div>
           <button class="btn-primary" style="width:100%; margin-top:14px; background:linear-gradient(135deg, var(--gold-1), var(--gold-2)); opacity:0.6; cursor:not-allowed; position:relative;" id="openAgencyBtn" disabled>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
             ثبت‌نام نمایندگی (به‌زودی)
@@ -939,6 +949,20 @@
       </div>
       <div class="sheet-body">
         <div id="myAdsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== My chats (conversations inbox) sheet ===== -->
+  <div class="overlay" id="myChatsOverlay">
+    <div class="sheet" style="max-height:88vh;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3>چت‌ها</h3>
+        <button class="sheet-close" id="closeMyChats">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div id="myChatsList"></div>
       </div>
     </div>
   </div>
@@ -2126,6 +2150,18 @@ function subscribeChat(){
     .subscribe();
 }
 
+function openChatDirect(listingId, otherPhone, label){
+  chatListingId = listingId;
+  chatOtherPhone = otherPhone;
+  document.getElementById('chatTitle').textContent = label;
+  document.getElementById('chatMessages').innerHTML = `<p style="color:var(--ink-dim); text-align:center; margin:auto; font-size:13px;">در حال بارگذاری...</p>`;
+  myChatsOverlay.classList.remove('open');
+  detailOverlay.classList.remove('open');
+  chatOverlay.classList.add('open');
+  loadChatMessages();
+  subscribeChat();
+}
+
 function openChat(listingId, sellerPhone, sellerName){
   if(!currentUser){
     showToast('اول باید وارد حساب کاربری بشی');
@@ -2140,15 +2176,80 @@ function openChat(listingId, sellerPhone, sellerName){
     showToast('این آگهی متعلق به خودته');
     return;
   }
-  chatListingId = listingId;
-  chatOtherPhone = sellerPhone;
-  document.getElementById('chatTitle').textContent = `چت با ${sellerName || 'فروشنده'}`;
-  document.getElementById('chatMessages').innerHTML = `<p style="color:var(--ink-dim); text-align:center; margin:auto; font-size:13px;">در حال بارگذاری...</p>`;
-  detailOverlay.classList.remove('open');
-  chatOverlay.classList.add('open');
-  loadChatMessages();
-  subscribeChat();
+  openChatDirect(listingId, sellerPhone, `چت با ${sellerName || 'فروشنده'}`);
 }
+
+// ---- My chats (conversations inbox) ----
+const myChatsOverlay = document.getElementById('myChatsOverlay');
+
+async function loadConversations(){
+  if(!supabaseClient || !currentUser) return [];
+  try{
+    const { data, error } = await supabaseClient
+      .from('messages')
+      .select('*')
+      .or(`sender_phone.eq.${currentUser.phone},receiver_phone.eq.${currentUser.phone}`)
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    const seen = new Map();
+    (data || []).forEach(m => {
+      const otherPhone = m.sender_phone === currentUser.phone ? m.receiver_phone : m.sender_phone;
+      const key = `${m.listing_id}__${otherPhone}`;
+      if(!seen.has(key)){
+        seen.set(key, { listingId: m.listing_id, otherPhone, lastBody: m.body, lastTime: m.created_at, mine: m.sender_phone === currentUser.phone });
+      }
+    });
+    return Array.from(seen.values());
+  } catch(err){
+    console.error('خطا در بارگذاری چت‌ها:', err);
+    return [];
+  }
+}
+
+async function renderMyChats(){
+  const list = document.getElementById('myChatsList');
+  list.innerHTML = `<p style="color:var(--ink-dim); text-align:center; padding:24px 0;">در حال بارگذاری...</p>`;
+  const conversations = await loadConversations();
+  document.getElementById('myChatsCount').textContent = fmt(conversations.length);
+  if(conversations.length === 0){
+    list.innerHTML = `<p style="color:var(--ink-dim); text-align:center; padding:24px 0;">هنوز هیچ گفتگویی نداری.</p>`;
+    return;
+  }
+  list.innerHTML = conversations.map(c => {
+    const ad = listings.find(l => l.id === c.listingId);
+    const adTitle = ad ? ad.title : 'آگهی حذف‌شده';
+    const time = new Date(c.lastTime).toLocaleString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+    const preview = (c.mine ? 'شما: ' : '') + c.lastBody;
+    return `
+    <div class="spec-item" style="display:flex; flex-direction:column; gap:4px; align-items:stretch; margin-bottom:10px; padding:12px; cursor:pointer;" data-listing="${c.listingId}" data-phone="${escapeHtml(c.otherPhone)}">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <b style="font-size:13px;">${escapeHtml(adTitle)}</b>
+        <span style="font-size:10.5px; color:var(--ink-dim); white-space:nowrap;">${time}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-size:11.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(preview)}</span>
+        <span style="font-size:10.5px; color:var(--ink-dim); white-space:nowrap;">${toPersianDigits(c.otherPhone)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-listing]').forEach(row => {
+    row.addEventListener('click', () => {
+      const ad = listings.find(l => l.id === row.dataset.listing);
+      const label = ad ? `چت درباره «${ad.title}»` : 'چت';
+      openChatDirect(row.dataset.listing, row.dataset.phone, label);
+    });
+  });
+}
+
+document.getElementById('myChatsRow').addEventListener('click', () => {
+  if(!currentUser) return;
+  authOverlay.classList.remove('open');
+  myChatsOverlay.classList.add('open');
+  renderMyChats();
+});
+document.getElementById('closeMyChats').addEventListener('click', () => myChatsOverlay.classList.remove('open'));
+myChatsOverlay.addEventListener('click', e => { if(e.target === myChatsOverlay) myChatsOverlay.classList.remove('open'); });
 
 document.getElementById('closeChat').addEventListener('click', () => {
   chatOverlay.classList.remove('open');
