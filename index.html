@@ -610,7 +610,7 @@
       <div class="logo" id="headerLogo">دیوار طلا</div>
       <div class="search-box">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" placeholder="جستجو در آگهی‌های طلا، سکه و جواهر…">
+        <input type="text" id="headerSearch" placeholder="جستجو در آگهی‌های طلا، سکه و جواهر…">
       </div>
       <button class="btn-post">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
@@ -625,8 +625,8 @@
       <span class="eyebrow">بازار آنلاین طلا و جواهر</span>
       <h1>بازار خرید و فروش آزاد <span>طلای</span> دست‌دوم و نو</h1>
       <p>هزاران آگهی از طلای دست‌دوم، سکه، شمش و جواهرات — با قیمت لحظه‌ای بازار و تاییدیه اصالت برای هر معامله.</p>
-      <form class="hero-search" onsubmit="return false;">
-        <input type="text" placeholder="مثلاً: النگو ۱۸ عیار، سکه بهار آزادی…">
+      <form class="hero-search" id="heroSearchForm">
+        <input type="text" id="heroSearch" placeholder="مثلاً: النگو ۱۸ عیار، سکه بهار آزادی…">
         <button type="submit">جستجو</button>
       </form>
       <div class="hero-stats">
@@ -865,10 +865,16 @@
               <b class="mono" id="myChatsCount">۰</b>
             </div>
           </div>
-          <button class="btn-primary" style="width:100%; margin-top:14px; background:linear-gradient(135deg, var(--gold-1), var(--gold-2)); opacity:0.6; cursor:not-allowed; position:relative;" id="openAgencyBtn" disabled>
+          <button class="btn-primary" style="width:100%; margin-top:14px; background:linear-gradient(135deg, var(--gold-1), var(--gold-2));" id="openAgencyBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
-            ثبت‌نام نمایندگی (به‌زودی)
+            ثبت‌نام نمایندگی
           </button>
+          <div class="spec-grid" style="grid-template-columns:1fr; margin-top:10px; display:none;" id="myAgencyRowWrap">
+            <div class="spec-item" id="myAgencyRow" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+              <span>درخواست نمایندگی من</span>
+              <span class="admin-status-pill" id="myAgencyStatusPill" style="font-size:11px;"></span>
+            </div>
+          </div>
           <button class="btn-ghost" style="width:100%; margin-top:10px; display:none; border-color:var(--gold-2); color:var(--gold-1);" id="openAdminBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 6v6c0 5 3.8 8.7 9 10 5.2-1.3 9-5 9-10V6z"/></svg>
             پنل مدیریت
@@ -911,6 +917,20 @@
           </div>
           <button type="submit" class="btn-primary" style="width:100%;">ارسال درخواست نمایندگی</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== My agency request status sheet ===== -->
+  <div class="overlay" id="myAgencyOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3>درخواست نمایندگی من</h3>
+        <button class="sheet-close" id="closeMyAgency">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div id="myAgencyList"></div>
       </div>
     </div>
   </div>
@@ -981,6 +1001,10 @@
       <div class="sheet-body" style="flex:1; display:flex; flex-direction:column; padding-bottom:8px;">
         <div id="chatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; min-height:200px; max-height:50vh;"></div>
         <form id="chatForm" style="display:flex; gap:8px; margin-top:10px;">
+          <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+          <button type="button" id="chatAttachBtn" style="width:44px; height:44px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--bg-2); border:1px solid var(--line); color:var(--ink-dim);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.4 11.5 12.6 20.3a4.5 4.5 0 0 1-6.4-6.4l9-9a3 3 0 0 1 4.2 4.2l-9 9a1.5 1.5 0 0 1-2.1-2.1l8.4-8.4"/></svg>
+          </button>
           <input type="text" id="chatInput" placeholder="پیام خود را بنویسید..." autocomplete="off" style="flex:1; background:var(--bg-2); border:1px solid var(--line); border-radius:20px; padding:10px 16px; color:var(--ink); font-family:inherit; font-size:13.5px;">
           <button type="submit" class="btn-primary" style="width:44px; height:44px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
@@ -1251,7 +1275,43 @@ function renderCategories(){
 }
 
 // ---- Listings ----
+// شهرهایی که نمایندگی رسمی دیوار طلا در آن‌ها فعال است (فقط برای بخش «دسته‌بندی شهرها» و بنر پوشش)
 const cities = ['میاندوآب'];
+
+// فهرست کامل استان‌ها و شهرستان‌های ایران (برای انتخاب شهر هنگام ثبت آگهی، فیلتر و درخواست نمایندگی)
+const iranProvinces = {
+  'آذربایجان شرقی': ['تبریز','مراغه','میانه','اهر','مرند','بناب','شبستر','سراب','هریس','آذرشهر','بستان‌آباد','چاراویماق','جلفا','خداآفرین','عجب‌شیر','ورزقان','هوراند','کلیبر'],
+  'آذربایجان غربی': ['ارومیه','خوی','مهاباد','میاندوآب','بوکان','سلماس','پیرانشهر','ماکو','نقده','شاهین‌دژ','تکاب','اشنویه','سردشت','چایپاره','چالدران','پلدشت','شوط','چاراویماق'],
+  'اردبیل': ['اردبیل','مشگین‌شهر','خلخال','پارس‌آباد','گرمی','بیله‌سوار','نمین','نیر','کوثر','سرعین'],
+  'اصفهان': ['اصفهان','کاشان','نجف‌آباد','خمینی‌شهر','شاهین‌شهر','فلاورجان','گلپایگان','مبارکه','نطنز','نائین','آران و بیدگل','اردستان','تیران و کرون','چادگان','خوانسار','خور و بیابانک','دهاقان','سمیرم','شهرضا','فریدن','فریدون‌شهر','لنجان'],
+  'البرز': ['کرج','فردیس','نظرآباد','ساوجبلاغ','اشتهارد','طالقان'],
+  'ایلام': ['ایلام','دهلران','آبدانان','ایوان','دره‌شهر','شیروان و چرداول','مهران','ملکشاهی','بدره','چوار','سیروان'],
+  'بوشهر': ['بوشهر','برازجان (دشتستان)','گناوه','کنگان','دیر','دیلم','عسلویه','جم','تنگستان','دشتی'],
+  'تهران': ['تهران','ری','شمیرانات','اسلامشهر','ورامین','پاکدشت','دماوند','فیروزکوه','رباط‌کریم','شهریار','ملارد','پردیس','پیشوا','قدس','قرچک'],
+  'چهارمحال و بختیاری': ['شهرکرد','بروجن','فارسان','لردگان','کوهرنگ','اردل','کیار','فلارد','بن','سامان','گندمان'],
+  'خراسان جنوبی': ['بیرجند','قاین','فردوس','طبس','نهبندان','سربیشه','بشرویه','درمیان','خوسف','زیرکوه'],
+  'خراسان رضوی': ['مشهد','نیشابور','سبزوار','تربت‌حیدریه','قوچان','کاشمر','تربت‌جام','چناران','گناباد','درگز','فریمان','سرخس','تایباد','خواف','رشتخوار','بردسکن','خلیل‌آباد','فیروزه','جوین','جغتای','بجستان','مه‌ولات','زبرخان'],
+  'خراسان شمالی': ['بجنورد','شیروان','اسفراین','جاجرم','فاروج','مانه و سملقان','رازوجرگلان','گرمه'],
+  'خوزستان': ['اهواز','آبادان','خرمشهر','دزفول','اندیمشک','بندر ماهشهر','ایذه','باغ‌ملک','بهبهان','رامهرمز','شادگان','شوش','شوشتر','مسجدسلیمان','هندیجان','هویزه','امیدیه','اندیکا','گتوند','دشت‌آزادگان','رامشیر','لالی','کارون','حمیدیه'],
+  'زنجان': ['زنجان','ابهر','خدابنده','خرمدره','ماهنشان','طارم','ایجرود'],
+  'سمنان': ['سمنان','شاهرود','دامغان','گرمسار','مهدی‌شهر','میامی','آرادان'],
+  'سیستان و بلوچستان': ['زاهدان','زابل','ایرانشهر','چابهار','خاش','سراوان','کنارک','نیک‌شهر','سرباز','دلگان','هیرمند','فنوج','قصرقند','مهرستان','هامون'],
+  'فارس': ['شیراز','مرودشت','جهرم','کازرون','فسا','لار','داراب','آباده','اقلید','استهبان','فیروزآباد','لامرد','ممسنی','نی‌ریز','رستم','سپیدان','سروستان','شیبکوه','فراشبند','قیروکارزین','مهر','خرم‌بید','ارسنجان','بوانات','زرین‌دشت'],
+  'قزوین': ['قزوین','تاکستان','البرز','آبیک','بوئین‌زهرا','آوج'],
+  'قم': ['قم'],
+  'کردستان': ['سنندج','سقز','مریوان','بانه','قروه','بیجار','کامیاران','دیواندره','دهگلان','سروآباد'],
+  'کرمان': ['کرمان','رفسنجان','سیرجان','جیرفت','بم','زرند','کهنوج','شهربابک','بردسیر','عنبرآباد','بافت','رودبار جنوب','ریگان','فهرج','قلعه‌گنج','منوجان','رابر','انار','راور'],
+  'کرمانشاه': ['کرمانشاه','اسلام‌آباد غرب','سنقر','کنگاور','هرسین','پاوه','جوانرود','سرپل‌ذهاب','گیلانغرب','قصرشیرین','صحنه','روانسر','دالاهو','ثلاث باباجانی'],
+  'کهگیلویه و بویراحمد': ['یاسوج','گچساران','دهدشت','دوگنبدان','لنده','باشت','چرام','بویراحمد'],
+  'گلستان': ['گرگان','گنبدکاووس','علی‌آباد کتول','آق‌قلا','بندر ترکمن','کردکوی','مینودشت','آزادشهر','رامیان','کلاله','مراوه‌تپه','گالیکش'],
+  'گیلان': ['رشت','بندر انزلی','لاهیجان','لنگرود','آستارا','رودسر','صومعه‌سرا','فومن','تالش','آستانه‌اشرفیه','رودبار','شفت','ماسال','رضوانشهر','سیاهکل','خمام','املش'],
+  'لرستان': ['خرم‌آباد','بروجرد','دورود','الیگودرز','کوهدشت','ازنا','پل‌دختر','الشتر','رومشکان','چگنی','معمولان'],
+  'مازندران': ['ساری','بابل','آمل','قائم‌شهر','بهشهر','تنکابن','رامسر','چالوس','نوشهر','نور','نکا','بابلسر','فریدونکنار','جویبار','سوادکوه','گلوگاه','عباس‌آباد','کلاردشت','میاندورود'],
+  'مرکزی': ['اراک','ساوه','خمین','محلات','دلیجان','تفرش','آشتیان','خنداب','کمیجان','فراهان','شازند'],
+  'هرمزگان': ['بندرعباس','میناب','بندرلنگه','قشم','کیش','رودان','حاجی‌آباد','بستک','جاسک','پارسیان','ابوموسی','خمیر','سیریک'],
+  'همدان': ['همدان','ملایر','نهاوند','تویسرکان','اسدآباد','کبودراهنگ','رزن','بهار','فامنین'],
+  'یزد': ['یزد','میبد','اردکان','بافق','مهریز','تفت','ابرکوه','اشکذر','بهاباد','خاتم','مروست'],
+};
 
 function renderCityChips(){
   const row = document.getElementById('cityRow');
@@ -1268,6 +1328,21 @@ function renderCityChips(){
       document.getElementById('listings').scrollIntoView({behavior:'smooth'});
     });
   });
+}
+
+// پر کردن یک select با تمام شهرستان‌های ایران، دسته‌بندی‌شده بر اساس استان
+function fillAllCitiesSelect(sel){
+  if(!sel || sel.dataset.filled === '1') return;
+  let html = '';
+  Object.keys(iranProvinces).forEach(province => {
+    html += `<optgroup label="${province}">`;
+    iranProvinces[province].forEach(city => {
+      html += `<option value="${city}">${city}</option>`;
+    });
+    html += `</optgroup>`;
+  });
+  sel.insertAdjacentHTML('beforeend', html);
+  sel.dataset.filled = '1';
 }
 const titles = [
   'گردنبند طلای ۱۸ عیار طرح برگ',
@@ -1325,8 +1400,18 @@ function renderGrid(){
   const cat = document.getElementById('fCat').value;
   const city = document.getElementById('fCity').value;
   const sort = document.getElementById('fSort').value;
+  const query = (currentSearchQuery || '').trim();
 
   let items = listings.filter(l => (!cat || l.category === cat) && (!city || l.city === city));
+  if(query){
+    const q = query.toLowerCase();
+    items = items.filter(l =>
+      (l.title || '').toLowerCase().includes(q) ||
+      (l.desc || '').toLowerCase().includes(q) ||
+      (l.category || '').toLowerCase().includes(q) ||
+      (l.city || '').toLowerCase().includes(q)
+    );
+  }
   if(sort === 'cheap') items = items.slice().sort((a,b)=>computeListingPrice(a)-computeListingPrice(b));
   if(sort === 'expensive') items = items.slice().sort((a,b)=>computeListingPrice(b)-computeListingPrice(a));
 
@@ -1334,14 +1419,24 @@ function renderGrid(){
     grid.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">${cardIcon()}</div>
-        <h3>هنوز آگهی‌ای ثبت نشده</h3>
-        <p>اولین نفری باش که طلا یا جواهرش رو اینجا برای فروش می‌ذاره.</p>
+        <h3>${query ? 'آگهی‌ای پیدا نشد' : 'هنوز آگهی‌ای ثبت نشده'}</h3>
+        <p>${query ? `برای عبارت «${escapeHtml(query)}» نتیجه‌ای یافت نشد. عبارت دیگری را امتحان کن.` : 'اولین نفری باش که طلا یا جواهرش رو اینجا برای فروش می‌ذاره.'}</p>
+        ${query ? `<button class="btn-ghost empty-cta" id="clearSearchBtn">پاک کردن جستجو</button>` : `
         <button class="btn-primary empty-cta" id="emptyPostBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
           ثبت اولین آگهی
-        </button>
+        </button>`}
       </div>`;
-    document.getElementById('emptyPostBtn').addEventListener('click', openPost);
+    if(query){
+      document.getElementById('clearSearchBtn').addEventListener('click', () => {
+        currentSearchQuery = '';
+        document.getElementById('headerSearch').value = '';
+        document.getElementById('heroSearch').value = '';
+        renderGrid();
+      });
+    } else {
+      document.getElementById('emptyPostBtn').addEventListener('click', openPost);
+    }
   } else {
     grid.innerHTML = items.map(l => `
       <div class="card" data-id="${l.id}">
@@ -1374,14 +1469,38 @@ function renderGrid(){
 
 function renderCityOptions(){
   const sel = document.getElementById('fCity');
-  cities.forEach(c => sel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+  fillAllCitiesSelect(sel);
 }
 
 renderCategories();
 renderCityChips();
 renderCityOptions();
 loadListingsFromDB();
+let currentSearchQuery = '';
 ['fCat','fCity','fSort'].forEach(id => document.getElementById(id).addEventListener('change', renderGrid));
+
+function runSearch(value){
+  currentSearchQuery = value;
+  document.getElementById('headerSearch').value = value;
+  document.getElementById('heroSearch').value = value;
+  renderGrid();
+  document.getElementById('listings').scrollIntoView({behavior:'smooth'});
+}
+
+let searchDebounce;
+document.getElementById('headerSearch').addEventListener('input', e => {
+  clearTimeout(searchDebounce);
+  const value = e.target.value;
+  searchDebounce = setTimeout(() => { currentSearchQuery = value; renderGrid(); }, 250);
+});
+document.getElementById('headerSearch').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); runSearch(e.target.value); }
+});
+
+document.getElementById('heroSearchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  runSearch(document.getElementById('heroSearch').value);
+});
 
 // ---- Toast ----
 function showToast(msg, duration = 2600){
@@ -1645,7 +1764,7 @@ function openPost(adToEdit){
   const catSel = document.getElementById('pCat');
   const citySel = document.getElementById('pCity');
   if(catSel.options.length === 0) categories.forEach(c => catSel.insertAdjacentHTML('beforeend', `<option value="${c.name}">${c.name}</option>`));
-  if(citySel.options.length === 0) cities.forEach(c => citySel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+  fillAllCitiesSelect(citySel);
 
   const sheetTitle = document.querySelector('#postOverlay .sheet-head h3');
   const submitBtn = document.querySelector('#postForm button[type="submit"]');
@@ -1782,6 +1901,7 @@ function openAuth(){
     document.getElementById('accAvatar').textContent = currentUser.name ? currentUser.name.charAt(0) : currentUser.phone.slice(-2);
     document.getElementById('myAdsCount').textContent = fmt(listings.filter(l => l.sellerPhone === currentUser.phone).length);
     document.getElementById('openAdminBtn').style.display = adminToken ? 'block' : 'none';
+    refreshMyAgencyRow();
     showAuthStep('account');
   } else {
     document.getElementById('authPhone').value = '';
@@ -2103,6 +2223,7 @@ const chatOverlay = document.getElementById('chatOverlay');
 let chatListingId = null;
 let chatOtherPhone = null;
 let chatChannel = null;
+let chatIsAgency = false;
 
 function chatConversationId(listingId, phoneA, phoneB){
   const pair = [phoneA, phoneB].sort().join('_');
@@ -2116,22 +2237,26 @@ function renderChatMessages(messages){
     return;
   }
   box.innerHTML = messages.map(m => {
-    const mine = m.sender_phone === currentUser.phone;
+    const mine = chatIsAgency ? (m.sender_role === (adminToken ? 'admin' : 'user')) : (m.sender_phone === currentUser.phone);
     const time = new Date(m.created_at).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
-    return `<div class="msg-bubble ${mine ? 'msg-me' : 'msg-them'}">${escapeHtml(m.body)}<span class="msg-time">${time}</span></div>`;
+    const isImg = typeof m.body === 'string' && m.body.startsWith('img::');
+    const senderLabel = chatIsAgency && !mine ? `<div style="font-size:10.5px; color:var(--gold-1); margin-bottom:3px;">${m.sender_role === 'admin' ? 'پشتیبانی دیوار طلا' : 'کاربر'}</div>` : '';
+    const content = isImg
+      ? `<img src="${escapeHtml(m.body.slice(5))}" style="max-width:100%; border-radius:10px; display:block; cursor:pointer;" onclick="openLightbox(['${m.body.slice(5)}'], 0)">`
+      : escapeHtml(m.body);
+    return `<div class="msg-bubble ${mine ? 'msg-me' : 'msg-them'}">${senderLabel}${content}<span class="msg-time">${time}</span></div>`;
   }).join('');
   box.scrollTop = box.scrollHeight;
 }
 
 async function loadChatMessages(){
-  if(!supabaseClient || !chatListingId || !chatOtherPhone) return;
+  if(!supabaseClient || !chatListingId) return;
   try{
-    const { data, error } = await supabaseClient
-      .from('messages')
-      .select('*')
-      .eq('listing_id', chatListingId)
-      .or(`and(sender_phone.eq.${currentUser.phone},receiver_phone.eq.${chatOtherPhone}),and(sender_phone.eq.${chatOtherPhone},receiver_phone.eq.${currentUser.phone})`)
-      .order('created_at', { ascending: true });
+    let query = supabaseClient.from('messages').select('*').eq('listing_id', chatListingId);
+    if(!chatIsAgency){
+      query = query.or(`and(sender_phone.eq.${currentUser.phone},receiver_phone.eq.${chatOtherPhone}),and(sender_phone.eq.${chatOtherPhone},receiver_phone.eq.${currentUser.phone})`);
+    }
+    const { data, error } = await query.order('created_at', { ascending: true });
     if(error) throw error;
     renderChatMessages(data || []);
   } catch(err){
@@ -2142,9 +2267,11 @@ async function loadChatMessages(){
 function subscribeChat(){
   if(!supabaseClient) return;
   if(chatChannel) supabaseClient.removeChannel(chatChannel);
+  const channelKey = chatIsAgency ? `agency-${chatListingId}` : `chat-${chatConversationId(chatListingId, currentUser.phone, chatOtherPhone)}`;
   chatChannel = supabaseClient
-    .channel(`chat-${chatConversationId(chatListingId, currentUser.phone, chatOtherPhone)}`)
+    .channel(channelKey)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `listing_id=eq.${chatListingId}` }, payload => {
+      if(chatIsAgency){ loadChatMessages(); return; }
       const m = payload.new;
       const belongsHere = (m.sender_phone === currentUser.phone && m.receiver_phone === chatOtherPhone) ||
                            (m.sender_phone === chatOtherPhone && m.receiver_phone === currentUser.phone);
@@ -2153,16 +2280,29 @@ function subscribeChat(){
     .subscribe();
 }
 
-function openChatDirect(listingId, otherPhone, label){
+function openChatDirect(listingId, otherPhone, label, isAgency = false){
   chatListingId = listingId;
   chatOtherPhone = otherPhone;
+  chatIsAgency = isAgency;
   document.getElementById('chatTitle').textContent = label;
   document.getElementById('chatMessages').innerHTML = `<p style="color:var(--ink-dim); text-align:center; margin:auto; font-size:13px;">در حال بارگذاری...</p>`;
   myChatsOverlay.classList.remove('open');
+  myAgencyOverlay.classList.remove('open');
+  adminOverlay.classList.remove('open');
   detailOverlay.classList.remove('open');
   chatOverlay.classList.add('open');
   loadChatMessages();
   subscribeChat();
+}
+
+// چت مربوط به درخواست نمایندگی (بین متقاضی و تیم پشتیبانی/ادمین‌ها)
+function openAgencySupportChat(reqId, label){
+  if(!currentUser){
+    showToast('اول باید وارد حساب کاربری بشی');
+    openAuth();
+    return;
+  }
+  openChatDirect(`agency_${reqId}`, null, label, true);
 }
 
 function openChat(listingId, sellerPhone, sellerName){
@@ -2269,35 +2409,66 @@ document.getElementById('chatForm').addEventListener('submit', async e => {
   e.preventDefault();
   const input = document.getElementById('chatInput');
   const body = input.value.trim();
-  if(!body || !currentUser || !chatListingId || !chatOtherPhone) return;
+  if(!body || !currentUser || !chatListingId) return;
+  if(!chatIsAgency && !chatOtherPhone) return;
   input.value = '';
+  await sendChatMessage(body);
+});
+
+document.getElementById('chatAttachBtn').addEventListener('click', () => {
+  document.getElementById('chatImageInput').click();
+});
+document.getElementById('chatImageInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file || !currentUser || !chatListingId) return;
+  if(!chatIsAgency && !chatOtherPhone) return;
+  try{
+    showToast('در حال ارسال عکس...');
+    const compressed = await compressImage(file, 1000, 0.7);
+    await sendChatMessage('img::' + compressed);
+  } catch(err){
+    console.error('خطا در ارسال عکس:', err);
+    showToast('ارسال عکس ناموفق بود');
+  }
+});
+
+async function sendChatMessage(body){
   if(!supabaseClient){
     showToast('اتصال به سرور برقرار نیست');
     return;
   }
   try{
-    const { error } = await supabaseClient.from('messages').insert({
+    const payload = {
       listing_id: chatListingId,
       sender_phone: currentUser.phone,
-      receiver_phone: chatOtherPhone,
+      receiver_phone: chatIsAgency ? 'admin' : chatOtherPhone,
       body,
-    });
+    };
+    if(chatIsAgency){
+      payload.sender_role = adminToken ? 'admin' : 'user';
+    }
+    const { error } = await supabaseClient.from('messages').insert(payload);
     if(error) throw error;
     loadChatMessages();
   } catch(err){
     console.error('خطا در ارسال پیام:', err);
     showToast('ارسال پیام ناموفق بود');
   }
-});
+}
 
 // ---- Agency (city representative) request ----
 const agencyOverlay = document.getElementById('agencyOverlay');
 
 document.getElementById('openAgencyBtn').addEventListener('click', () => {
-  // این قابلیت هنوز فعال نشده - دکمه غیرفعاله (disabled) پس این تابع اجرا نمی‌شه
+  if(!currentUser){
+    showToast('اول باید وارد حساب کاربری بشی');
+    openAuth();
+    return;
+  }
   const citySel = document.getElementById('agCity');
-  if(citySel.options.length === 0) cities.forEach(c => citySel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
-  if(currentUser) document.getElementById('agPhone').value = currentUser.phone;
+  fillAllCitiesSelect(citySel);
+  document.getElementById('agPhone').value = currentUser.phone;
   authOverlay.classList.remove('open');
   agencyOverlay.classList.add('open');
 });
@@ -2327,11 +2498,13 @@ document.getElementById('agencyForm').addEventListener('submit', async e => {
       phone: req.phone,
       message: req.desc,
       status: req.status,
+      user_phone: currentUser ? currentUser.phone : null,
     });
     if(error) throw error;
     e.target.reset();
     agencyOverlay.classList.remove('open');
     showToast(`درخواست نمایندگی ${req.city} ثبت شد ✓ به‌زودی تماس می‌گیریم`);
+    refreshMyAgencyRow();
   } catch(err){
     showToast('ثبت درخواست با خطا مواجه شد، دوباره امتحان کن');
   } finally {
@@ -2339,6 +2512,71 @@ document.getElementById('agencyForm').addEventListener('submit', async e => {
     submitBtn.textContent = 'ارسال درخواست نمایندگی';
   }
 });
+
+// ---- My agency request status ----
+const myAgencyOverlay = document.getElementById('myAgencyOverlay');
+let myAgencyRequests = [];
+
+async function refreshMyAgencyRow(){
+  const wrap = document.getElementById('myAgencyRowWrap');
+  if(!currentUser || !supabaseClient){ wrap.style.display = 'none'; return; }
+  try{
+    const { data, error } = await supabaseClient
+      .from('agency_requests')
+      .select('*')
+      .eq('user_phone', currentUser.phone)
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    myAgencyRequests = data || [];
+    if(myAgencyRequests.length === 0){
+      wrap.style.display = 'none';
+      return;
+    }
+    wrap.style.display = 'block';
+    const latest = myAgencyRequests[0];
+    const pill = document.getElementById('myAgencyStatusPill');
+    pill.textContent = adminStatusLabel[latest.status] || latest.status;
+    pill.className = `admin-status-pill admin-status-${latest.status}`;
+  } catch(err){
+    console.error('خطا در بررسی وضعیت نمایندگی:', err);
+    wrap.style.display = 'none';
+  }
+}
+
+function renderMyAgencyStatus(){
+  const list = document.getElementById('myAgencyList');
+  if(myAgencyRequests.length === 0){
+    list.innerHTML = `<p style="color:var(--ink-dim); text-align:center; padding:24px 0;">درخواستی ثبت نکرده‌ای.</p>`;
+    return;
+  }
+  list.innerHTML = myAgencyRequests.map(r => `
+    <div class="spec-item" style="display:flex; flex-direction:column; gap:8px; align-items:stretch; margin-bottom:12px; padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <b style="font-size:14px;">📍 ${escapeHtml(r.city)}</b>
+        <span class="admin-status-pill admin-status-${r.status}" style="font-size:11px;">${adminStatusLabel[r.status] || r.status}</span>
+      </div>
+      <span style="font-size:11px; color:var(--ink-dim);">تاریخ ثبت: ${new Date(r.created_at).toLocaleDateString('fa-IR')}</span>
+      ${r.status === 'rejected' && r.reject_reason ? `<div style="background:rgba(200,60,60,0.08); border:1px solid rgba(200,60,60,0.3); border-radius:8px; padding:10px; font-size:12px; color:#e57373; line-height:1.8;"><b>دلیل رد درخواست:</b> ${escapeHtml(r.reject_reason)}</div>` : ''}
+      <button class="btn-ghost" style="width:100%; margin-top:4px; border-color:var(--gold-2); color:var(--gold-1);" data-chat-req="${r.id}">
+        💬 چت با پشتیبانی دیوار طلا
+      </button>
+    </div>`).join('');
+
+  list.querySelectorAll('[data-chat-req]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = myAgencyRequests.find(x => x.id === btn.dataset.chatReq);
+      openAgencySupportChat(r.id, `چت درباره نمایندگی ${r.city}`);
+    });
+  });
+}
+
+document.getElementById('myAgencyRow').addEventListener('click', () => {
+  authOverlay.classList.remove('open');
+  myAgencyOverlay.classList.add('open');
+  renderMyAgencyStatus();
+});
+document.getElementById('closeMyAgency').addEventListener('click', () => myAgencyOverlay.classList.remove('open'));
+myAgencyOverlay.addEventListener('click', e => { if(e.target === myAgencyOverlay) myAgencyOverlay.classList.remove('open'); });
 
 // ---- Admin panel ----
 const adminOverlay = document.getElementById('adminOverlay');
@@ -2422,28 +2660,41 @@ function renderAdminList(){
         <span>ثبت: <b>${new Date(r.created_at).toLocaleDateString('fa-IR')}</b></span>
       </div>
       ${r.message ? `<div class="admin-req-desc">${escapeHtml(r.message)}</div>` : ''}
+      ${r.status === 'rejected' && r.reject_reason ? `<div style="background:rgba(200,60,60,0.08); border:1px solid rgba(200,60,60,0.3); border-radius:8px; padding:8px 10px; font-size:11.5px; color:#e57373; line-height:1.8; margin-top:6px;"><b>دلیل رد:</b> ${escapeHtml(r.reject_reason)}</div>` : ''}
       <div class="admin-req-actions">
         ${r.status !== 'approved' ? `<button class="admin-btn-approve" data-act="approved">✓ تایید</button>` : ''}
         ${r.status !== 'rejected' ? `<button class="admin-btn-reject" data-act="rejected">✕ رد</button>` : ''}
         ${r.status !== 'pending' ? `<button data-act="pending">↺ بازگردانی</button>` : ''}
+        <button data-act="chat" style="border-color:var(--gold-2); color:var(--gold-1);">💬 چت</button>
         <button class="admin-btn-reject" data-act="delete">🗑 حذف</button>
       </div>
     </div>`).join('');
 
   list.querySelectorAll('.admin-req-card').forEach(card => {
     const id = card.dataset.id;
+    const req = allAdminRequests.find(r => r.id === id);
     card.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => handleAdminAction(id, btn.dataset.act, btn));
+      btn.addEventListener('click', () => {
+        if(btn.dataset.act === 'chat'){
+          openAgencySupportChat(id, `چت با ${req.full_name || 'متقاضی'} (${req.city})`);
+          return;
+        }
+        handleAdminAction(id, btn.dataset.act, btn);
+      });
     });
   });
 }
 
 async function handleAdminAction(id, act, btn){
+  let reason = null;
+  if(act === 'rejected'){
+    reason = prompt('دلیل رد این درخواست را بنویس (اختیاری، برای اطلاع متقاضی):') || '';
+  }
   const buttons = btn.closest('.admin-req-actions').querySelectorAll('button');
   buttons.forEach(b => b.disabled = true);
   try{
     const url = act === 'delete' ? `${EDGE_FUNCTIONS_BASE}/admin-delete-request` : `${EDGE_FUNCTIONS_BASE}/admin-update-request`;
-    const body = act === 'delete' ? {id} : {id, status: act};
+    const body = act === 'delete' ? {id} : {id, status: act, reject_reason: act === 'rejected' ? reason : null};
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}`},
