@@ -827,6 +827,9 @@
             <label>کد تایید ارسال‌شده به <span id="otpPhoneShown" class="mono"></span></label>
             <input type="text" id="authOtp" placeholder="− − − −" maxlength="4" inputmode="numeric">
           </div>
+          <p style="font-size:11.5px; color:var(--ink-dim); line-height:1.9; margin:-6px 0 14px; padding:10px 12px; background:var(--bg-2); border-radius:10px; border:1px solid var(--line);">
+            ⏳ ممکن است ارسال پیامک چند دقیقه طول بکشد. از صبر و شکیبایی شما سپاسگزاریم.
+          </p>
           <div id="newPasswordFieldsWrap" style="display:none;">
             <div class="field">
               <label>رمز عبور جدید</label>
@@ -1381,11 +1384,11 @@ loadListingsFromDB();
 ['fCat','fCity','fSort'].forEach(id => document.getElementById(id).addEventListener('change', renderGrid));
 
 // ---- Toast ----
-function showToast(msg){
+function showToast(msg, duration = 2600){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2600);
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // ---- Detail sheet ----
@@ -1865,7 +1868,7 @@ document.getElementById('sendOtpBtn').addEventListener('click', async () => {
     document.getElementById('verifyOtpBtn').textContent = flowMode === 'signup' ? 'ثبت‌نام' : 'تنظیم رمز عبور';
 
     showAuthStep('otp');
-    showToast('کد تایید برای شما پیامک شد');
+    showToast('کد تایید برای شما پیامک شد. ممکن است چند دقیقه طول بکشد 🙏', 4500);
   } catch(err){
     showToast(err.message || 'ارتباط با سرور برقرار نشد، دوباره امتحان کن');
   } finally {
@@ -1925,7 +1928,7 @@ document.getElementById('forgotPasswordBtn').addEventListener('click', async () 
     document.getElementById('newPasswordFieldsWrap').style.display = 'block';
     document.getElementById('verifyOtpBtn').textContent = 'تنظیم رمز جدید';
     showAuthStep('otp');
-    showToast('کد تایید برای شما پیامک شد');
+    showToast('کد تایید برای شما پیامک شد. ممکن است چند دقیقه طول بکشد 🙏', 4500);
   } catch(err){
     showToast(err.message || 'ارسال کد ناموفق بود، دوباره امتحان کن');
   } finally {
