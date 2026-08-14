@@ -2524,7 +2524,7 @@ async function refreshMyAgencyRow(){
     const { data, error } = await supabaseClient
       .from('agency_requests')
       .select('*')
-      .eq('user_phone', currentUser.phone)
+      .or(`user_phone.eq.${currentUser.phone},phone.eq.${currentUser.phone}`)
       .order('created_at', { ascending: false });
     if(error) throw error;
     myAgencyRequests = data || [];
